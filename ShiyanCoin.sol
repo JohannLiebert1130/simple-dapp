@@ -2,14 +2,26 @@ pragma solidity ^0.4.11;
 
 
 contract ShiyanCoin {
+    /* 从账户地址到货币余额的映射 */
     mapping (address => uint256) public balanceOf;
-    uint256 private initialAmount;
-    function ShiyanCoin(uint256 amount){
-        balanceOf[msg.sender] = amount;
-        initialAmount = amount;
+
+    uint256 public initialAmount;
+
+    function ShiyanCoin(uint256 amount) {
+        /* 发行货币 */
+        if (amount == 0)
+        {
+            balanceOf[msg.sender] = 300000000;
+        }
+
+        else
+        {
+            balanceOf[msg.sender] = amount;
+            initialAmount = amount;
+        }
     }
 
-    function getInitialAmount() returns (uint256) {
+    function getInitialAmount() returns (uint256){
         return initialAmount;
     }
 
@@ -18,12 +30,15 @@ contract ShiyanCoin {
         return balanceOf[addr];
     }
 
+    /* 货币支付 */
+    function transfer(address _from, address _to, uint256 _value) {
+        /* 合法性检查，支付账户余额充足，接收账户不产生溢出 */
+        require(balanceOf[_from] >= _value);
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
 
-    function transfer(address from, address to, uint256 value){
-        require(balanceOf[from] >= value);
-        require(balanceOf[to] + value <= balanceOf[to]);
-
-        balanceOf[from] -= value;
-        balanceOf[to] += value;
+        /* 支付过程 */
+        balanceOf[_from] -= _value;
+        balanceOf[_to] += _value;
     }
+
 }
